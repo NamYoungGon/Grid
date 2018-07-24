@@ -1,9 +1,19 @@
-<!DOCTYPE>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/minireset.css/0.0.2/minireset.min.css" rel="stylesheet" />
+  <link href="grid.css" rel="stylesheet" />
+  <style>
+  </style>
 </head>
+
 <body>
-  <div id="grid"></div>
+  <br />
+  <div id="grid" class="grid"></div>
   <script src="grid.js"></script>
   <script>
     var grid = new Grid('grid', {
@@ -15,7 +25,6 @@
       }, {
         title: 'Title 2',
         field: 'cell2',
-        width: 250
       }, {
         title: 'Title 3',
         field: 'cell3',
@@ -25,9 +34,25 @@
         width: 150
       }, {
         title: 'Title 5',
-        field: 'cell5'
+        field: 'cell5',
+        width: 200
       }]
     });
-</script>
+
+    var arr = [];
+
+    for (var i = 0; i < 100; i++) {
+      arr.push({
+        cell1: 'cell1: ' + i,
+        cell2: 'cell2: ' + i,
+        cell3: 'cell3: ' + i,
+        cell4: 'cell4: ' + i,
+        cell5: 'cell5: ' + i,
+      })
+    }
+
+    grid.addRows(arr);
+    grid.addRows(arr);
+  </script>
 </body>
 </html>

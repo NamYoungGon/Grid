@@ -1,0 +1,55 @@
+:root {
+  --color-gray: #eee;
+  --th-border: #b7b7b7;
+  --tr-hover: #fbfbfb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.grid {
+  border: 1px solid var(--color-gray);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.grid-header {
+  padding-right: 17px;
+  background: var(--color-gray);
+}
+
+.grid-header-wrap {
+  position: relative;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 9px;
+  top: 0px;
+}
+
+th {
+  padding: 10px;
+  border-right: 1px solid var(--th-border);
+  text-align: left;
+}
+
+.grid-content {
+  overflow: auto;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+.grid-content .row:hover {
+  background-color: var(--tr-hover);
+}
+
+td {
+  padding: 15px 10px;
+  border-bottom: 1px solid var(--color-gray);
+}
