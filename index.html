@@ -7,17 +7,22 @@
   <title>Document</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/minireset.css/0.0.2/minireset.min.css" rel="stylesheet" />
   <link href="grid.css" rel="stylesheet" />
-  <style>
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
   <br />
-  <div id="grid" class="grid"></div>
+  <div style="width: 80%; margin: 0 auto;">
+    <div id="grid" class="grid"></div>
+  </div>
+  <script src="prototype.js"></script>
   <script src="grid.js"></script>
+  <script src="grid.columnresize.js"></script>
+  <script src="grid.sort.js"></script>
   <script>
     var grid = new Grid('grid', {
       height: 500,
+      sortable: 'single',
       columns: [{
         title: 'Title 1',
         field: 'cell1',
@@ -25,6 +30,7 @@
       }, {
         title: 'Title 2',
         field: 'cell2',
+        dataType: 'number'
       }, {
         title: 'Title 3',
         field: 'cell3',
@@ -44,7 +50,7 @@
     for (var i = 0; i < 100; i++) {
       arr.push({
         cell1: 'cell1: ' + i,
-        cell2: 'cell2: ' + i,
+        cell2: parseInt(Math.random() * 100, 10),
         cell3: 'cell3: ' + i,
         cell4: 'cell4: ' + i,
         cell5: 'cell5: ' + i,

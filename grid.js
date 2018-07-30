@@ -1,4 +1,4 @@
-(function () {
+(function (_w) {
   const Grid = (function () {
     function Grid(id, options) {
       if (!(this instanceof Grid)) {
@@ -8,67 +8,52 @@
       this._init(id, options);
     }
 
-    Grid.extend = function (objs) {
+    Grid.extend = Grid.prototype.extend = function (objs) {
       for (let key in objs) {
-        this.prototype[key] = objs[key];
+        this[key] = objs[key];
       }
     }
 
-    function createElement(tagName, attr = {}) {
-      const element = document.createElement(tagName);
-      const { className } = attr;
-      if (className) {
-        element.className = className;
-      }
-
-      return element;
-    }
-
-    function getDOMRect(element) {
-      return element.getBoundingClientRect();
-    }
-
-    HTMLElement.prototype.on = function (event, selector, fn) {
-      if (typeof selector === 'function') {
-        fn = selector;
-        selector = undefined;
-      }
-
-      this.addEventListener(event, (e) => {
-        const { target } = e;
-        if (!selector) {
-          if (this === target || this.contains(target)) {
-            fn.call(this, e);
-          }
-        } else {
-          const elements = Array.from(this.querySelectorAll(selector));
-          let index = elements.indexOf(target);
-          if (index > -1) {
-            fn.call(elements[index], e);
-          } else {
-            let result = elements.some((element, i) => {
-              index = i;
-              return element.contains(target);
-            });
-
-            result && fn.call(elements[i], e);
-          }
+    Grid.extend({
+      createElement(tagName, attr = {}) {
+        const element = document.createElement(tagName);
+        const { className } = attr;
+        if (className) {
+          element.className = className;
         }
-      });
-    };
+
+        return element;
+      },
+      getBoundingClientRect(element) {
+        return element.getBoundingClientRect();
+      }
+    });
 
 // -------------------------------------------------------------
 // Base Functions
 // -------------------------------------------------------------
-    Grid.extend({
+    Grid.prototype.extend({
       _init: function (id, options) {
         this.el = {};
         this.data = [];
         this.el.grid = document.getElementById(id);
         this.options = options;
+        this._initColumns();
         this._drawBase()._drawCols()._drawHeader()._setHeight()._event();
       },
+      _initColumns: function () {
+        const columns = this.options.columns;
+        columns.map = {};
+        columns.forEach(function (column) {
+          column.dataType = column.dataType || 'text';
+          column.sortType = 'basic';
+          columns.map[column.field] = column;
+        });
+
+        return this;
+      },
       _drawBase: function () {
+        const { createElement } = Grid;
         const { el } = this;
 
         const header = el.header = createElement('div', { className: 'grid-header' });
@@ -117,8 +102,8 @@
         const { columns } = options;
 
         let headerStr = '';
-        headerStr = columns.reduce((accumulator, { title }) => {
-          return accumulator + `<th>${title}</th>`;
+        headerStr = columns.reduce((accumulator, { title, field }, i) => {
+          return accumulator + `<th data-field=${field}>${title}</th>`;
         }, headerStr);
         headerStr = `<tr class='tr'>${headerStr}</tr>`;
 
@@ -128,20 +113,28 @@
       },
       _event: function () {
         const { el } = this;
-        el.header.on('click', 'th', function (e) {
-          console.log('th click');
-        });
+        const { headerWrap , content } = el;
 
+        this._columnResize();
+        this._columnSort();
+
+        const scrollMove = function (e) {
+          headerWrap.scrollLeft = this.scrollLeft;
+        }
+        
+        content.on('scroll', scrollMove);
+        
         return this;
       },
       destroy: function () {
 
       },
       _setHeight: function () {
+        const { getBoundingClientRect } = Grid;
         const { options, el } = this;
         let contentHeight = options.height;
 
-        const headerHeight = getDOMRect(el.header).height;
+        const headerHeight = getBoundingClientRect(el.header).height;
         contentHeight -= headerHeight;
         this.el.headerResizeHandle.style.height = `${headerHeight}px`;
         this.el.content.style.height = `${contentHeight}px`;
@@ -153,8 +146,10 @@
         this.data = this.data.concat(rows);
         this._renderRows(rows);
       },
-      _renderRows: function (rows = this.data) {
+      _renderRows: function (rows) {
         const { el } = this;
+
+        rows = rows || this.data.displayData || this.data;
 
         let rowsStr = '';
         rows.forEach((row, i) => {
@@ -187,11 +182,16 @@
         } = args;
 
         return `<td id='${y}-${field}' class='cell'>${text}</td>`;
+      },
+      _removeRows: function () {
+        const { el } = this;
+
+        el.contentTableBody.innerHTML = '';
       }
     });
 
     return Grid;
   })();
 
-  window.Grid = Grid;
-})();
+  _w.Grid = Grid;
+})(window);
