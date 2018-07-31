@@ -1,7 +1,8 @@
 (function () {
+  const { _getBoundingClientRect } = Grid;
+
   Grid.prototype.extend({
     _columnResize: function () {
-      const { getBoundingClientRect } = Grid;
       const { el } = this;
       const { 
         grid, 
@@ -24,8 +25,8 @@
         if (handleObj)
           return false;
   
-        let thRight = getBoundingClientRect(this).right;
-        let gridLeft = getBoundingClientRect(grid).left;
+        let thRight = _getBoundingClientRect(this).right;
+        let gridLeft = _getBoundingClientRect(grid).left;
         let scrollLeft = content.scrollLeft;
         let handleLeft = thRight - gridLeft - handleSize + scrollLeft;
         handleTh = this;
@@ -36,7 +37,7 @@
         headerTableColgroup.childNodes[index].style.setProperty('width', `${width}px`);
         contentTableColgroup.childNodes[index].style.setProperty('width', `${width}px`);
   
-        let tableWidth = getBoundingClientRect(headerTable).width;
+        let tableWidth = _getBoundingClientRect(headerTable).width;
         let newTableWidth = tableWidth + diff;
         headerTable.style.setProperty('width', `${newTableWidth}px`);
         contentTable.style.setProperty('width', `${newTableWidth}px`);
@@ -70,7 +71,7 @@
   
         if (diff !== 0) {
           let thIndex = handleTh.cellIndex;
-          let thWidth = getBoundingClientRect(handleTh).width;
+          let thWidth = _getBoundingClientRect(handleTh).width;
           let newWidth = thWidth + diff;
   
           if (thWidth === minWidth && diff < 0)

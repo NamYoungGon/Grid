@@ -15,19 +15,23 @@
     }
 
     Grid.extend({
-      createElement(tagName, attr = {}) {
+      _createElement(tagName, attr = {}) {
         const element = document.createElement(tagName);
-        const { className } = attr;
-        if (className) {
-          element.className = className;
+        for (let name in attr) {
+          element[name] = attr[name];
         }
 
         return element;
       },
-      getBoundingClientRect(element) {
+      _getBoundingClientRect(element) {
         return element.getBoundingClientRect();
-      }
+      },
+      _getElement: function (domain, query) {
+        return domain.querySelector(query);
+      },
     });
+
+    const g = Grid;
 
 // -------------------------------------------------------------
 // Base Functions
@@ -39,7 +43,7 @@
         this.el.grid = document.getElementById(id);
         this.options = options;
         this._initColumns();
-        this._drawBase()._drawCols()._drawHeader()._setHeight()._event();
+        this._renderBase()._renderCols()._renderHeader()._setHeight()._event();
       },
       _initColumns: function () {
         const columns = this.options.columns;
@@ -52,20 +56,21 @@
 
         return this;
       },
-      _drawBase: function () {
-        const { createElement } = Grid;
-        const { el } = this;
+      _renderBase: function () {
+        const { _createElement } = g;
+        const { el, options } = this;
+        const { editable } = options;
 
-        const header = el.header = createElement('div', { className: 'grid-header' });
-        const headerWrap = el.headerWrap = createElement('div', { className: 'grid-header-wrap' });
-        const headerTable = el.headerTable = createElement('table');
-        const headerResizeHandle = el.headerResizeHandle = createElement('div', { className: 'resize-handle' });
-        const headerTableColgroup = el.headerTableColgroup = createElement('colgroup');
-        const headerTableHead = el.headerTableHead = createElement('thead');
-        const content = el.content = createElement('div', { className: 'grid-content' });
-        const contentTable = el.contentTable = createElement('table');
-        const contentTableColgroup = el.contentTableColgroup = createElement('colgroup');
-        const contentTableBody = el.contentTableBody = createElement('tbody');
+        const header = el.header = _createElement('div', { className: 'grid-header' });
+        const headerWrap = el.headerWrap = _createElement('div', { className: 'grid-header-wrap' });
+        const headerTable = el.headerTable = _createElement('table');
+        const headerResizeHandle = el.headerResizeHandle = _createElement('div', { className: 'resize-handle' });
+        const headerTableColgroup = el.headerTableColgroup = _createElement('colgroup');
+        const headerTableHead = el.headerTableHead = _createElement('thead');
+        const content = el.content = _createElement('div', { className: `grid-content${editable ? ' editable' : ''}` });
+        const contentTable = el.contentTable = _createElement('table');
+        const contentTableColgroup = el.contentTableColgroup = _createElement('colgroup');
+        const contentTableBody = el.contentTableBody = _createElement('tbody');
 
         headerTable.appendChild(headerTableColgroup);
         headerTable.appendChild(headerTableHead);
@@ -82,7 +87,7 @@
 
         return this;
       },
-      _drawCols: function () {
+      _renderCols: function () {
         const { options, el } = this;
         const { columns } = options;
 
@@ -97,7 +102,7 @@
 
         return this;
       },
-      _drawHeader: function () {
+      _renderHeader: function () {
         const { options, el } = this;
         const { columns } = options;
 
@@ -117,6 +122,7 @@
 
         this._columnResize();
         this._columnSort();
+        this._editable();
 
         const scrollMove = function (e) {
           headerWrap.scrollLeft = this.scrollLeft;
@@ -130,11 +136,10 @@
 
       },
       _setHeight: function () {
-        const { getBoundingClientRect } = Grid;
         const { options, el } = this;
         let contentHeight = options.height;
 
-        const headerHeight = getBoundingClientRect(el.header).height;
+        const headerHeight = g._getBoundingClientRect(el.header).height;
         contentHeight -= headerHeight;
         this.el.headerResizeHandle.style.height = `${headerHeight}px`;
         this.el.content.style.height = `${contentHeight}px`;
@@ -181,13 +186,33 @@
           field
         } = args;
 
-        return `<td id='${y}-${field}' class='cell'>${text}</td>`;
+        return `<td id='grid-${y}-${field}' class='cell'>${text}</td>`;
       },
       _removeRows: function () {
         const { el } = this;
 
         el.contentTableBody.innerHTML = '';
-      }
+      },
+      _setData: function (rowIndex, fieldName, value) {
+        let { data } = this;
+
+        data = data.displayData || data;
+        data[rowIndex][fieldName] = value;
+        this._setCell(rowIndex, fieldName, value)
+
+        return true;
+      },
+      _setCell: function (rowIndex, fieldName, value, td) {
+        const { el } = this;
+        const { contentTable } = el;
+        td = td || g._getElement(contentTable, `#grid-${rowIndex}-${fieldName}`);
+        td.textContent = value;
+
+        return true;
+      },
+      setData: function (rowIndex, fieldName, value) {
+        this._setData(rowIndex, fieldName, value);
+      },
     });
 
     return Grid;

@@ -21,8 +21,10 @@ HTMLElement.prototype.on = function (event, selector, fn) {
           return element.contains(target);
         });
 
-        result && fn.call(elements[i], e);
+        result && fn.call(elements[index], e);
       }
     }
   });
+
+  return this;
 };
