@@ -39,18 +39,23 @@ var grid = new Grid('grid', {
 });
 ```
 
-***
+
 
 ## Methods
+
 ### addRow(rows[,insertIndex])
 - `rows`
 
+***
 ### getRow()
 
+***
 ### setCell(rowIndex, field, value)
 - `rowIndex`
 - `field`
 - `value`
+
+
 
 ## Events
 - selectRow
