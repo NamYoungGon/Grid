@@ -69,8 +69,8 @@
       const { data, options, el } = this;
       const { columns } = options;
       const { headerTable } = el;
-      let displayData = data.displayData = data.displayData || data.slice();
       const column = columns.map[fieldName];
+      let displayData = data.displayData = data.displayData || data.slice();
       let dataType = column.dataType;
 
       sortType = sortType || (column.sortType === 'basic' ? 'asc' : column.sortType === 'asc' ? 'desc' : 'basic');

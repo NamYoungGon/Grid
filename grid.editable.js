@@ -1,23 +1,20 @@
 (function () {
-  const { _createElement } = Grid;
-
-  const cancelEditable = function () {
-
-  }
+  const g = Grid;
   
   Grid.prototype.extend({
     _editable: function () {
       const that = this;
-      const { el } = this;
+      const { el, status } = this;
       const { content } = el;
+      const { down, up } = status.selected;
 
       content.on('mouseup', 'td', function (e) {
         const td = this;
         const isEditing = td.classList.contains('editing');
-        if (!isEditing) {
+        if (!isEditing && down.rowIndex === up.rowIndex && down.field === up.field) {
           td.classList.add('editing');
           const text = td.textContent;
-          const input = _createElement('input', {
+          const input = g._createElement('input', {
             type: 'text'
           });
           input.value = text;
@@ -29,14 +26,13 @@
         const input = this;
         const td = input.closest('td');
         const isEditing = td.classList.contains('editing');
-        let [, rowIndex, fieldName] = td.id.split('-');
-        rowIndex = parseInt(rowIndex, 10);
+        const { rowIndex, field } = g._getCellPos(td.id);
       
         if (isEditing) {
           td.classList.remove('editing');
           const text = input.value;
 
-          that._setData(rowIndex, fieldName, text);
+          that._setData(rowIndex, field, text);
         } 
       })
     }

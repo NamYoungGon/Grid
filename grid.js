@@ -16,7 +16,7 @@
 
     Grid.extend({
       _createElement(tagName, attr = {}) {
-        const element = document.createElement(tagName);
+        const element = _d.createElement(tagName);
         for (let name in attr) {
           element[name] = attr[name];
         }
@@ -29,9 +29,37 @@
       _getElement: function (domain, query) {
         return domain.querySelector(query);
       },
+      _getCellPos(id) {
+        let [, rowIndex, field] = id.split('-');
+        rowIndex = parseInt(rowIndex, 10);
+
+        return {
+          rowIndex,
+          field
+        }
+      }
     });
 
+    const _d = document;
     const g = Grid;
+    const eventName = [
+      'selectRow'
+    ];
+    const cellInfo = {
+      rowIndex: -1,
+      field: '',
+    };
+    const status = {
+      selected: {
+        ...cellInfo,
+        down: {
+          ...cellInfo
+        },
+        up: {
+          ...cellInfo
+        }
+      }
+    }
 
 // -------------------------------------------------------------
 // Base Functions
@@ -40,7 +68,8 @@
       _init: function (id, options) {
         this.el = {};
         this.data = [];
-        this.el.grid = document.getElementById(id);
+        this.status = { ... status };
+        this.el.grid = _d.getElementById(id);
         this.options = options;
         this._initColumns();
         this._renderBase()._renderCols()._renderHeader()._setHeight()._event();
@@ -91,11 +120,10 @@
         const { options, el } = this;
         const { columns } = options;
 
-        let columnStr = '';
-        columnStr = columns.reduce((accumulator, { width }) => {
+        let columnStr = columns.reduce((accumulator, { width }) => {
           let style = width !== undefined ? ` style="width: ${width}px;" ` : '';
           return accumulator + `<col${style}></col>`;
-        }, columnStr);
+        }, '');
 
         el.headerTableColgroup.innerHTML = columnStr;
         el.contentTableColgroup.innerHTML = columnStr;
@@ -106,10 +134,9 @@
         const { options, el } = this;
         const { columns } = options;
 
-        let headerStr = '';
-        headerStr = columns.reduce((accumulator, { title, field }, i) => {
+        let headerStr = columns.reduce((accumulator, { title, field }, i) => {
           return accumulator + `<th data-field=${field}>${title}</th>`;
-        }, headerStr);
+        }, '');
         headerStr = `<tr class='tr'>${headerStr}</tr>`;
 
         el.headerTableHead.innerHTML = headerStr;
@@ -117,39 +144,82 @@
         return this;
       },
       _event: function () {
-        const { el } = this;
+        const { el, options } = this;
         const { headerWrap , content } = el;
 
+        this._bindEvent() && this._contentEvent()
         this._columnResize();
         this._columnSort();
-        this._editable();
+        options.editable && this._editable();
 
-        const scrollMove = function (e) {
-          headerWrap.scrollLeft = this.scrollLeft;
-        }
-        
         content.on('scroll', scrollMove);
         
+        function scrollMove(e) {
+          headerWrap.scrollLeft = this.scrollLeft;
+        }
+
         return this;
+      },
+      _bindEvent: function () {
+        eventName.forEach(function (name) {
+          this[name] = (function (that) {
+            return function (fn) {
+              that[`on${name.charAt(0).toUpperCase()}${name.substr(1)}`] = fn;
+            }
+          })(this)
+        }.bind(this));
+
+        return true;
+      },
+      _contentEvent: function () {
+        const that = this;
+        const { el, status } = this;
+        const { content } = el;
+        const { selected } = status;
+        const { down, up } = selected;
+
+        content
+        .on('mousedown', 'td', function () {
+          const td = this;
+          const { rowIndex, field } = g._getCellPos(td.id);
+
+          down.rowIndex = rowIndex;
+          down.field = field;
+
+          that.onSelectRow && that.onSelectRow.call(null, down);
+        })
+        .on('mouseup', 'td', function () {
+          const td = this;
+          const { rowIndex, field } = g._getCellPos(td.id);
+
+          up.rowIndex = rowIndex;
+          up.field = field;
+        });
       },
       destroy: function () {
 
       },
       _setHeight: function () {
         const { options, el } = this;
+        const { headerResizeHandle, content } = el;
+        const headerHeight = g._getBoundingClientRect(el.header).height;
         let contentHeight = options.height;
 
-        const headerHeight = g._getBoundingClientRect(el.header).height;
         contentHeight -= headerHeight;
-        this.el.headerResizeHandle.style.height = `${headerHeight}px`;
-        this.el.content.style.height = `${contentHeight}px`;
+        headerResizeHandle.style.setProperty('height', `${headerHeight}px`);
+        content.style.setProperty('height', `${contentHeight}px`);
 
         return this;
       },
-      addRows: function (rows) {
+      addRow: function (rows, insertIndex) {
         const { el } = this;
         this.data = this.data.concat(rows);
         this._renderRows(rows);
+      },
+      getRow: function (rowIndex) {
+        const data = this.data.displayData || this.data;
+
+        return data[rowIndex];
       },
       _renderRows: function (rows) {
         const { el } = this;
@@ -159,21 +229,20 @@
         let rowsStr = '';
         rows.forEach((row, i) => {
           rowsStr += this._renderRow(row, i);
-        })
+        });
 
         el.contentTableBody.insertAdjacentHTML('beforeend', rowsStr);
       },
       _renderRow: function (row, y) {
         const { columns } = this.options;
 
-        let rowStr = '';
-        rowStr = columns.reduce((accumulator, { field }) => {
+        let rowStr = columns.reduce((accumulator, { field }) => {
           return accumulator + this._renderCell({
             field,
             y,
             text: row[field],
           });
-        }, rowStr);
+        }, '');
 
         rowStr = `<tr class='row'>${rowStr}</tr>`;
 
@@ -205,12 +274,13 @@
       _setCell: function (rowIndex, fieldName, value, td) {
         const { el } = this;
         const { contentTable } = el;
+
         td = td || g._getElement(contentTable, `#grid-${rowIndex}-${fieldName}`);
         td.textContent = value;
 
         return true;
       },
-      setData: function (rowIndex, fieldName, value) {
+      setCell: function (rowIndex, fieldName, value) {
         this._setData(rowIndex, fieldName, value);
       },
     });
