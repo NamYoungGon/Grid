@@ -54,19 +54,27 @@ Test`Test`Test**Test**Test
 
 
 ### Template
-#### height - (number) total height
-- Test
-#### columns: (object) 
-- title: 
+#### height
+total height
+***
+#### columns
+- title: enter the column title to be displayed
 - field: 
-- width: 
+- width: enter the width of the column
 - dataType: 
-#### sortable: (string) 'single' / 'multiple'
-#### editable: (boolean) true / false
+***
+#### sortable : 'single' / 'multiple'
+***
+#### editable : true / false
 
 ***
 
 ### Method
-#### addRow: add the data
-#### getRow**: returns the data
-#### setCell**
+#### addRow
+add the data
+***
+#### getRow
+returns the data
+***
+#### setCell
+set the data
