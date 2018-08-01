@@ -43,7 +43,9 @@
     const _d = document;
     const g = Grid;
     const eventName = [
-      'selectRow'
+      'selectRow',
+      'change',
+      'changed'
     ];
     const cellInfo = {
       rowIndex: -1,
@@ -211,16 +213,6 @@
 
         return this;
       },
-      addRow: function (rows, insertIndex) {
-        const { el } = this;
-        this.data = this.data.concat(rows);
-        this._renderRows(rows);
-      },
-      getRow: function (rowIndex) {
-        const data = this.data.displayData || this.data;
-
-        return data[rowIndex];
-      },
       _renderRows: function (rows) {
         const { el } = this;
 
@@ -262,26 +254,47 @@
 
         el.contentTableBody.innerHTML = '';
       },
-      _setData: function (rowIndex, fieldName, value) {
+      _setData: function (rowIndex, field, value) {
         let { data } = this;
 
         data = data.displayData || data;
-        data[rowIndex][fieldName] = value;
-        this._setCell(rowIndex, fieldName, value)
+        data[rowIndex][field] = value;
+        this._setCell(rowIndex, field, value)
 
         return true;
       },
-      _setCell: function (rowIndex, fieldName, value, td) {
+      _setCell: function (rowIndex, field, value, td) {
         const { el } = this;
         const { contentTable } = el;
-
-        td = td || g._getElement(contentTable, `#grid-${rowIndex}-${fieldName}`);
+        
+        td = td || g._getElement(contentTable, `#grid-${rowIndex}-${field}`);
         td.textContent = value;
-
+        
         return true;
       },
-      setCell: function (rowIndex, fieldName, value) {
-        this._setData(rowIndex, fieldName, value);
+      _getData: function (rowIndex, field) {
+        let { data } = this;
+
+        data = data.displayData || data;
+        let value = data[rowIndex][field];
+
+        return value;
+      },
+      addRow: function (rows, insertIndex) {
+        const { el } = this;
+        this.data = this.data.concat(rows);
+        this._renderRows(rows);
+      },
+      getRow: function (rowIndex) {
+        const data = this.data.displayData || this.data;
+
+        return data[rowIndex];
+      },
+      setCell: function (rowIndex, field, value) {
+        this._setData(rowIndex, field, value);
+      },
+      getCell: function (rowIndex, field) {
+        return this._getData(rowIndex, field);
       },
     });
 

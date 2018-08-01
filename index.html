@@ -19,10 +19,14 @@
       /* grid-auto-rows: minmax(50px, auto); */
       grid-gap: 10px;
     }
+
+    #log {
+      height: 200px;
+      overflow: auto;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
-
 <body>
   <br />
   <div style="width: 80%; margin: 0 auto;">
@@ -44,6 +48,10 @@
         <input type="text" id="cell5" />
       </div>
     </div>
+    <br/>
+    <div id="log">
+      
+    </div>
   </div>
   <script src="prototype.js"></script>
   <script src="grid.js"></script>
@@ -51,10 +59,21 @@
   <script src="grid.columnresize.js"></script>
   <script src="grid.sort.js"></script>
   <script>
+    var arr = [];
+    for (var i = 0; i < 100; i++) {
+      arr.push({
+        cell1: 'cell1: ' + i,
+        cell2: parseInt(Math.random() * 100, 10),
+        cell3: 'cell3: ' + i,
+        cell4: 'cell4: ' + i,
+        cell5: 'cell5: ' + i,
+      })
+    }
+
     var grid = new Grid('grid', {
       height: 500,
       sortable: 'single',
-      // editable: true,
+      editable: true,
       columns: [{
         title: 'Title 1',
         field: 'cell1',
@@ -77,29 +96,37 @@
       }]
     });
 
-    var arr = [];
-
-    for (var i = 0; i < 100; i++) {
-      arr.push({
-        cell1: 'cell1: ' + i,
-        cell2: parseInt(Math.random() * 100, 10),
-        cell3: 'cell3: ' + i,
-        cell4: 'cell4: ' + i,
-        cell5: 'cell5: ' + i,
-      })
-    }
-
     grid.addRow(arr);
 
     grid.selectRow(function (e) {
+      const { rowIndex, field } = e;
       const rowData = grid.getRow(e.rowIndex);
 
-      cell1.value = rowData.cell1;
-      cell2.value = rowData.cell2;
-      cell3.value = rowData.cell3;
-      cell4.value = rowData.cell4;
-      cell5.value = rowData.cell5;
+      log(`selectRow (${rowIndex}, ${field})`);
+      cell1.value = rowData.cell1; cell2.value = rowData.cell2; cell3.value = rowData.cell3; cell4.value = rowData.cell4; cell5.value = rowData.cell5;
     });
+
+    grid.change(function (e) {
+      const { rowIndex, field, prevValue, value } = e;
+      log(`change (${rowIndex}, ${field}) -> prevValue: ${prevValue}, value: ${value}`);
+
+      if (value === '') {
+        log('The value is required');
+        return false;
+      }
+    });
+    
+    grid.changed(function (e) {
+      const { rowIndex, field, value } = e;
+      log(`changed (${rowIndex}, ${field}) -> value: ${value}`);
+    });
+
+    var logPnl = document.getElementById('log');
+    function log(message) {
+      console.log(message);
+      logPnl.insertAdjacentHTML('beforeend', `<p>${message}</p>`);
+      logPnl.scrollTop = logPnl.scrollHeight;
+    }
   </script>
 </body>
 </html>
