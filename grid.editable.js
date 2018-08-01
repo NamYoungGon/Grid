@@ -21,7 +21,7 @@
           td.textContent = '';
           td.appendChild(input);
           input.focus();
-        }
+        }        
       }).on('focusout', 'input', function (e) {
         const input = this;
         const td = input.closest('td');

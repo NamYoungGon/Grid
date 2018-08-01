@@ -44,17 +44,23 @@ var grid = new Grid('grid', {
 ## Methods
 
 ### addRow(rows[,insertIndex])
-- `rows`
-- `insertIndex`
+- `rows`: data to be added 
+- `insertIndex`: the index of the row to be inserted
 
 ***
-### getRow()
+### getRow(rowIndex)
+- `rowIndex`: the index of the data to be got
 
 ***
 ### setCell(rowIndex, field, value)
 - `rowIndex`
 - `field`
 - `value`
+
+***
+### getCell(rowIndex, field)
+- `rowIndex`
+- `field`
 
 
 

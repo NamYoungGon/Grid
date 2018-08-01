@@ -187,15 +187,16 @@
 
           down.rowIndex = rowIndex;
           down.field = field;
-
-          that.onSelectRow && that.onSelectRow.call(null, down);
         })
         .on('mouseup', 'td', function () {
           const td = this;
           const { rowIndex, field } = g._getCellPos(td.id);
-
+          
           up.rowIndex = rowIndex;
           up.field = field;
+        })
+        .on('click', 'td', function () {
+          that.onSelectRow && that.onSelectRow.call(null, up);
         });
       },
       destroy: function () {
