@@ -1,12 +1,4 @@
-# grid
-
-TestTestTest
-
 # Grid
-
-## Grid
-
-### Grid
 
 ```js
     var grid = new Grid('grid', {
@@ -36,45 +28,32 @@ TestTestTest
     });
 ```
 
-- Test
-- Test2
-- TestTest`Test`Test
-
-### 111
-
-***
-### 222
-***
-### 333
-gg
-
-
-Test`Test`Test**Test**Test
-
-
-
-### Template
-#### height
+## Template
+### height
 total height
 ***
-#### columns
-- title: enter the column title to be displayed
-- field: 
-- width: enter the width of the column
-- dataType: 
+### columns
+- title: the column title to be displayed
+- field: The unique name of column
+- width: the width of the column
+- dataType: 'text' (default: 'text')
 ***
-#### sortable : 'single' / 'multiple'
+### sortable : 'single' / 'multiple'
 ***
-#### editable : true / false
+### editable : true / false
 
 ***
 
-### Method
-#### addRow
-add the data
+## Method
+### addRow(rows[,insertIndex])
+- `rows`
+
 ***
-#### getRow
-returns the data
+### getRow()
+
 ***
-#### setCell
-set the data
+### setCell(rowIndex, field, value)
+- `rowIndex`
+- `field`
+- `value`
+
