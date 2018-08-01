@@ -41,7 +41,7 @@ var grid = new Grid('grid', {
 
 ***
 
-## Method
+## Methods
 ### addRow(rows[,insertIndex])
 - `rows`
 
@@ -54,3 +54,7 @@ var grid = new Grid('grid', {
 - `field`
 - `value`
 
+***
+
+## Events
+- selectRow
