@@ -29,14 +29,15 @@
 ```
 
 ## Template
-- height
-- columns
-  - title: the column title to be displayed
-  - field: The unique name of column
-  - width: the width of the column
-  - dataType: 'text' (default: 'text')
-- sortable: 'single' / 'multiple'
-- editable: true / false
+### options
+- **height**
+- **columns**
+  - **title**: the column title to be displayed
+  - **field**: The unique name of column
+  - **width**: the width of the column
+  - **dataType**: 'text' (default: 'text')
+- **sortable**: 'single' / 'multiple'
+- **editable**: true / false
 
 ***
 
