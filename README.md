@@ -53,12 +53,17 @@ Test`Test`Test**Test**Test
 
 
 
-## Template
-- height
-- sortable,
-- columns
+### Template
+####height
+(number) total height
+- Test
+####columns: (object) title, field, width, dataType
+####sortable: (string) 'single' / 'multiple'
+####editable: (boolean) true / false
 
-## Method
-- addRow
-- getRow
-- setCell
+***
+
+### Method
+#### addRow: add the data
+#### getRow**: returns the data
+#### setCell**
