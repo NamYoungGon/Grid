@@ -54,10 +54,13 @@ Test`Test`Test**Test**Test
 
 
 ### Template
-#### height
-(number) total height
+#### height - (number) total height
 - Test
-#### columns: (object) title, field, width, dataType
+#### columns: (object) 
+- title: 
+- field: 
+- width: 
+- dataType: 
 #### sortable: (string) 'single' / 'multiple'
 #### editable: (boolean) true / false
 
