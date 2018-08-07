@@ -71,7 +71,8 @@
   
         if (diff !== 0) {
           let thIndex = handleTh.cellIndex;
-          let thWidth = _getBoundingClientRect(handleTh).width;
+          let thWidth =  this._getColumn('col', thIndex).header.style.width || _getBoundingClientRect(handleTh).width;
+          thWidth = parseInt(thWidth, 10);
           let newWidth = thWidth + diff;
   
           if (thWidth === minWidth && diff < 0)
@@ -85,7 +86,7 @@
           setColWidth(thIndex, newWidth, diff);
           handleObj.pageX = pageX;
         }      
-      });
+      }.bind(this));
     }
   });
 })()

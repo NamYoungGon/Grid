@@ -297,6 +297,29 @@
       getCell: function (rowIndex, field) {
         return this._getData(rowIndex, field);
       },
+      _getColumn: function (type, index) {
+        const { el } = this;
+        const { 
+          header, 
+          headerTable,
+          headerTableColgroup, 
+          headerTableHead,
+          content,
+          contentTable,
+          contentTableColgroup ,
+        } = el;
+  
+        let result;
+  
+        if (type === 'col') {
+          result = {
+            header: headerTableColgroup.childNodes[index],
+            body: contentTableColgroup.childNodes[index],
+          }
+        }
+  
+        return result;
+      },      
     });
 
     return Grid;
